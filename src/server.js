@@ -1,9 +1,12 @@
 const express = require('express');
 const zod = require('zod')
 const app = express();
+const path = require('path')
 const fs = require('fs');
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
+
+const filePath = path.resolve(__dirname,"track.json")
 
 const findIndex = (array,id) =>{
     // return array.filter((element,id) => element.id===id);
@@ -26,7 +29,7 @@ app.use((err,req,res,next)=>{
 })
 
 app.get('/projects',(req,res)=>{
-    fs.readFile('./track.json',"utf-8",(err,data)=>{
+    fs.readFile(filePath,"utf-8",(err,data)=>{
         if(err) throw err;
         let list = JSON.parse(data);
         res.status(200).send(list);
@@ -34,7 +37,7 @@ app.get('/projects',(req,res)=>{
 })
 
 app.get('/projects/:id',(req,res)=>{
-    fs.readFile('./track.json',"utf-8",(err,data)=>{
+    fs.readFile(filePath,"utf-8",(err,data)=>{
         if(err) throw err;
         let list = JSON.parse(data);
         let index = findIndex(list,parseInt(req.params.id));
@@ -52,12 +55,12 @@ app.post('/projects',(req,res)=>{
         description:req.body.description,
         status:req.body.status
     }
-    fs.readFile('./track.json',"utf-8",(err,data)=>{
+    fs.readFile(filePath,"utf-8",(err,data)=>{
         if(err) throw err;
         let list = JSON.parse(data);
         console.log(newProject)
         list.push(newProject);
-        fs.writeFile('./track.json',JSON.stringify(list),(err,data)=>{
+        fs.writeFile(filePath,JSON.stringify(list),(err,data)=>{
             if(err) throw err;
             res.status(200).send(newProject);
         })
@@ -65,7 +68,7 @@ app.post('/projects',(req,res)=>{
 })
 
 app.put('/projects/:id',(req,res)=>{
-    fs.readFile('./track.json',"utf-8",(err,data)=>{
+    fs.readFile(filePath,"utf-8",(err,data)=>{
         if(err) throw err;
         let list = JSON.parse(data);
         let index = findIndex(req.params.id);
@@ -79,7 +82,7 @@ app.put('/projects/:id',(req,res)=>{
             status:req.body.status
         }
         list[index] = updateTodo;
-        fs.writeFile('./track.json',JSON.stringify(list),(err,data)=>{
+        fs.writeFile(filePath,JSON.stringify(list),(err,data)=>{
             if(err) throw err;
             res.status(200).send(updateTodo);
         })
@@ -87,13 +90,13 @@ app.put('/projects/:id',(req,res)=>{
 })
 
 app.delete('/projects/:id',(req,res)=>{
-    fs.readFile('./track.json',"utf-8",(err,data)=>{
+    fs.readFile(filePath,"utf-8",(err,data)=>{
         if(err) throw err;
         let list = JSON.parse(data);
         let index = findIndex(list,parseInt(req.params.id));
         if(index==-1) return res.status(404).send("Not found !!");
         let newList = removeIndex(list,index);
-        fs.writeFile('./track.json',JSON.stringify(newList),(err,data)=>{
+        fs.writeFile(filePath,JSON.stringify(newList),(err,data)=>{
             if(err) throw err;
             res.status(200).send(data);
         })       

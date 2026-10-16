@@ -6,7 +6,8 @@ COPY package*.json .
 
 RUN npm ci 
 
-COPY /src ./app
+COPY /src ./src
+
 
 EXPOSE 3000
 
